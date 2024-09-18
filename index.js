@@ -20,7 +20,6 @@ async function getParties() {
 
 // Add a party
 async function addParty(party) {
-  // TODO
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -31,6 +30,21 @@ async function addParty(party) {
 
     if (json.error) {
       throw new Error(json.error.message);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Request the API delete a party with a given id
+async function deleteParty(id) {
+  try {
+    const response = await fetch(API_URL + id, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      const responseObj = await response.json();
+      throw new Error(responseObj.error.message);
     }
   } catch (error) {
     console.error(error);
@@ -56,7 +70,15 @@ function renderParties() {
             <dd>${party.date}</dd>
             <dd>${party.location}</dd>
             <dd>${party.description}</dd>
+            <button>Delete</Button>
         `;
+
+    const $button = card.querySelector("button");
+    $button.addEventListener("click", async () => {
+      await deleteParty(party.id);
+      await getParties();
+      renderParties();
+    });
     return card;
   });
 
