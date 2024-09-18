@@ -19,8 +19,22 @@ async function getParties() {
 }
 
 // Add a party
-async function addParty() {
+async function addParty(party) {
   // TODO
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(party),
+    });
+    const responseObj = await response.json();
+
+    if (json.error) {
+      throw new Error(json.error.message);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // === Render ===
@@ -57,3 +71,18 @@ async function render() {
 
 // === Script ===
 render();
+
+const form = document.querySelector("form");
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const formattedPartyDate = new Date(form.partyDate.value).toISOString();
+  const party = {
+    name: form.partyName.value,
+    date: formattedPartyDate,
+    location: form.partyLocation.value,
+    description: form.partyDescription.value,
+  };
+  await addParty(party);
+  render();
+});
